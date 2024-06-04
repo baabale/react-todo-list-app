@@ -1,10 +1,21 @@
 import React, { createContext, useReducer, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 
+// Actions
+const TODO_ACTIONS = {
+  ADD_TODO: 'ADD_TODO',
+  EDIT_TODO: 'EDIT_TODO',
+  REMOVE_TODO: 'REMOVE_TODO',
+  TOGGLE_TODO: 'TOGGLE_TODO',
+  SET_FILTER: 'SET_FILTER',
+  SET_SEARCH_TERM: 'SET_SEARCH_TERM'
+};
+
 // Initial state
 const initialState = {
   todos: [],
-  filter: 'all'
+  filter: 'all',
+  searchTerm: ''
 };
 
 // Reducer function
@@ -12,6 +23,13 @@ function todoReducer(state, action) {
   switch (action.type) {
     case 'ADD_TODO':
       return { ...state, todos: [...state.todos, action.payload] };
+    case 'EDIT_TODO':
+      return {
+        ...state,
+        todos: state.todos.map(todo =>
+          todo.id === action.payload.id ? { ...todo, text: action.payload.text } : todo
+        )
+      }
     case 'REMOVE_TODO':
       return { ...state, todos: state.todos.filter(todo => todo.id !== action.payload) };
     case 'TOGGLE_TODO':
@@ -23,6 +41,8 @@ function todoReducer(state, action) {
       };
     case 'SET_FILTER':
       return { ...state, filter: action.payload };
+    case TODO_ACTIONS.SET_SEARCH_TERM:
+      return { ...state, searchTerm: action.payload };
     default:
       return state;
   }
